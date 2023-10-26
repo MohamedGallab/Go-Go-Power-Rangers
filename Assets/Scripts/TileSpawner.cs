@@ -69,7 +69,7 @@ public class TileSpawner : MonoBehaviour
 
         int obstacles = 0;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < Random.Range(1, 4); i++)
         {
             GameObject item = _spawnables[Random.Range(0, _spawnables.Count)];
 

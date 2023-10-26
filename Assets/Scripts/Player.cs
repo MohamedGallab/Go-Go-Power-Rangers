@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public int Lane
     {
         get { return _lane; }
-        private set
+        set
         {
             _lane = value;
             if (_lane > 1) { _lane = 1; }
@@ -126,71 +126,28 @@ public class Player : MonoBehaviour
         Score = 0;
     }
 
-
     void Update()
     {
         if (Game.IsGameOver || Game.IsPaused)
-        {
             return;
-        }
 
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            Lane--;
-
+            MoveLeft();
 
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            Lane++;
-
+            MoveRight();
 
         if (Input.GetKeyDown(KeyCode.J))
-            if (RedEnergy == 5)
-                Form = Form.Red;
-            else
-                _audioSource.PlayOneShot(_soundEffects[4]);
-
-
+            Transform(Form.Red);
 
         if (Input.GetKeyDown(KeyCode.K))
-            if (GreenEnergy == 5)
-                Form = Form.Green;
-            else
-                _audioSource.PlayOneShot(_soundEffects[4]);
-
+            Transform(Form.Green);
 
         if (Input.GetKeyDown(KeyCode.L))
-            if (BlueEnergy == 5)
-                Form = Form.Blue;
-            else
-                _audioSource.PlayOneShot(_soundEffects[4]);
-
+            Transform(Form.Blue);
 
         if (Input.GetKeyDown(KeyCode.Space))
-        {
-            switch (Form)
-            {
-                case Form.Red:
-                    RedEnergy--;
-                    tileSpawner.RemoveAllObstacles();
-                    _audioSource.PlayOneShot(_soundEffects[2]);
-                    break;
-
-                case Form.Green when !HasMultiplier:
-                    GreenEnergy--;
-                    HasMultiplier = true;
-                    _audioSource.PlayOneShot(_soundEffects[2]);
-                    break;
-
-                case Form.Blue when !HasShield:
-                    BlueEnergy--;
-                    HasShield = true;
-                    _audioSource.PlayOneShot(_soundEffects[2]);
-                    break;
-
-                default:
-                    _audioSource.PlayOneShot(_soundEffects[4]);
-                    break;
-            }
-        }
+            UsePower();
 
         if ((Form == Form.Red && RedEnergy == 0) ||
             (Form == Form.Green && GreenEnergy == 0) ||
@@ -221,6 +178,7 @@ public class Player : MonoBehaviour
                     RedEnergy++;
                 }
                 _audioSource.PlayOneShot(_soundEffects[0]);
+                other.gameObject.SetActive(false);
                 break;
 
             case "Orb/Green":
@@ -231,6 +189,7 @@ public class Player : MonoBehaviour
                 if (HasMultiplier)
                     Score += 8;
                 _audioSource.PlayOneShot(_soundEffects[0]);
+                other.gameObject.SetActive(false);
                 break;
 
             case "Orb/Blue":
@@ -244,15 +203,16 @@ public class Player : MonoBehaviour
                     BlueEnergy++;
                 }
                 _audioSource.PlayOneShot(_soundEffects[0]);
+                other.gameObject.SetActive(false);
                 break;
 
             case "Obstacle":
                 _audioSource.PlayOneShot(_soundEffects[3]);
+                Score--;
                 if (HasShield)
                     HasShield = false;
                 else if (Form == Form.White)
                 {
-                    Score--;
                     Game.IsGameOver = true;
                 }
                 else
@@ -262,4 +222,65 @@ public class Player : MonoBehaviour
         HasMultiplier = false;
         tileSpawner.DisableItems();
     }
+
+    void MoveLeft()
+    {
+        Lane--;
+    }
+
+    void MoveRight()
+    {
+        Lane++;
+    }
+
+    public void Transform(Form form)
+    {
+        switch (form)
+        {
+            case Form.Red when RedEnergy == 5:
+                Form = Form.Red;
+                break;
+
+            case Form.Green when GreenEnergy == 5:
+                Form = Form.Green;
+                break;
+
+            case Form.Blue when BlueEnergy == 5:
+                Form = Form.Blue;
+                break;
+
+            default:
+                _audioSource.PlayOneShot(_soundEffects[4]);
+                break;
+        }
+    }
+
+    public void UsePower()
+    {
+        switch (Form)
+        {
+            case Form.Red:
+                RedEnergy--;
+                tileSpawner.RemoveAllObstacles();
+                _audioSource.PlayOneShot(_soundEffects[2]);
+                break;
+
+            case Form.Green when !HasMultiplier:
+                GreenEnergy--;
+                HasMultiplier = true;
+                _audioSource.PlayOneShot(_soundEffects[2]);
+                break;
+
+            case Form.Blue when !HasShield:
+                BlueEnergy--;
+                HasShield = true;
+                _audioSource.PlayOneShot(_soundEffects[2]);
+                break;
+
+            default:
+                _audioSource.PlayOneShot(_soundEffects[4]);
+                break;
+        }
+    }
+
 }

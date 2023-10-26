@@ -11,6 +11,7 @@ public class Game : MonoBehaviour
     [SerializeField] GameObject _pauseMenu;
     [SerializeField] GameObject _gameOverMenu;
     [SerializeField] GameObject _hud;
+    [SerializeField] GameObject _androidHud;
     [SerializeField] TMP_Text _scoreText;
     [SerializeField] List<AudioClip> _soundTracks = new();
     AudioSource _audioSource;
@@ -43,6 +44,7 @@ public class Game : MonoBehaviour
             Time.timeScale = 0;
             _gameOverMenu.SetActive(true);
             _hud.SetActive(false);
+            _androidHud.SetActive(false);
             _scoreText.text = $"Score: {Player.Score}";
             _audioSource.Pause();
             _audioSource.clip = _soundTracks[1];
